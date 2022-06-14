@@ -72,7 +72,7 @@ const getSubmitData = formData => {
     n: money_n
   }
 
-  const money_holidays = mul(unused_days, day_salary)
+  const money_holidays = mul(unused_days, day_salary, 2)
   const money_bonus = year_end_bonus * (days_this_year / 365)
   const money_damages = money_damages_map[damages_mode]
 
