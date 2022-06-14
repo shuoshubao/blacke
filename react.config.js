@@ -17,7 +17,7 @@ module.exports = ({ isDevelopment, isProduction }) => {
       }
     },
     assets: {
-      css: ['https://file.ljcdn.com/bs/antd/4.18.7/dist/antd.min.css'],
+      css: ['https://file.ljcdn.com/bs/antd/4.18.7/dist/antd.dark.min.css'],
       js: [
         'https://file.ljcdn.com/bs/lodash/4.17.21/lodash.min.js',
         `https://file.ljcdn.com/bs/react/17.0.2/umd/${
