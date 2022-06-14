@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { Card, Space, Descriptions, Form, InputNumber, Select, Input, DatePicker, Typography } from 'antd'
-import { add, mul, div } from '@nbfe/tools'
+import { formatTime, add, mul, div } from '@nbfe/tools'
 import moment from 'moment'
+import { omit } from 'lodash'
 
 const { Text } = Typography
 
@@ -34,14 +35,34 @@ const columns = [
   { label: '合计', name: 'money_total' }
 ]
 
-const defaultData = {
-  start_day: moment('2020-01-01'),
-  end_day: moment(),
+let defaultData = {
+  start_day: '2020-01-01',
+  end_day: formatTime(Date.now()),
   month_salary: 50000,
   year_end_bonus_month: 16,
   achievement: 1,
   unused_days: 1,
   damages_mode: '2n'
+}
+
+if (!window.localStorage.getItem('blackData')) {
+  window.localStorage.setItem('blackData', JSON.stringify(defaultData))
+} else {
+  const cacheData = window.localStorage.getItem('blackData')
+  defaultData = JSON.parse(cacheData)
+}
+
+const getFormData = data => {
+  data.start_day = moment(data.start_day)
+  data.end_day = moment(data.end_day)
+  return data
+}
+
+const getCacheData = data => {
+  const result = { ...data }
+  result.start_day = formatTime(result.start_day)
+  result.end_day = formatTime(result.end_day)
+  return result
 }
 
 const getSubmitData = formData => {
@@ -87,10 +108,11 @@ const getSubmitData = formData => {
 export default () => {
   const formRef = useRef()
 
-  const [formData, setFormData] = useState({ ...defaultData })
+  const [formData, setFormData] = useState(getFormData({ ...defaultData }))
 
   const onValuesChange = (changedValues, allValues) => {
     setFormData(allValues)
+    window.localStorage.setItem('blackData', JSON.stringify(getCacheData(allValues)))
   }
 
   return (
@@ -100,14 +122,14 @@ export default () => {
           ref={formRef}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 20 }}
-          initialValues={defaultData}
+          initialValues={omit(defaultData, ['start_day', 'end_day'])}
           onValuesChange={onValuesChange}
           autoComplete="off"
         >
-          <Form.Item label="入职日期" name="start_day">
+          <Form.Item label="入职日期" name="start_day" initialValue={moment(defaultData.start_day)}>
             <DatePicker style={{ width: '100%' }} allowClear={false} />
           </Form.Item>
-          <Form.Item label="end_day" name="end_day">
+          <Form.Item label="end_day" name="end_day" initialValue={moment(defaultData.end_day)}>
             <DatePicker style={{ width: '100%' }} allowClear={false} />
           </Form.Item>
           <Form.Item label="月薪" name="month_salary">
