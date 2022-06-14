@@ -68,6 +68,12 @@ const getCacheData = data => {
 const getSubmitData = formData => {
   const { start_day, end_day, month_salary, year_end_bonus_month, achievement, unused_days, damages_mode } = formData
 
+  // 所有在职天数
+  const days_all = end_day.diff(start_day, 'days')
+
+  // n
+  const n = Math.ceil(days_all / 365 / 0.5) / 2
+
   // 今年的在职天数
   const days_this_year = end_day.diff(moment(1, 'MM'), 'days')
 
@@ -81,7 +87,7 @@ const getSubmitData = formData => {
   const max_month_salary = 37840
 
   // N
-  const money_n = Math.floor(Math.min(37840, average_month_salary))
+  const money_n = Math.floor(Math.min(37840, average_month_salary)) * n
 
   // 日薪
   const day_salary = div(month_salary, 21.75)
