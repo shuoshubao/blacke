@@ -1,0 +1,14 @@
+{
+  "name": "blacke",
+  "version": "1.0.0",
+  "description": "black ke",
+  "devDependencies": {
+    "@nbfe/react-cli": "^0.2.4"
+  },
+  "dependencies": {
+    "@nbfe/form": "^2.1.9",
+    "@nbfe/table": "^0.2.6",
+    "@nbfe/tools": "^0.2.15",
+    "antd": "^4.21.1"
+  }
+}
