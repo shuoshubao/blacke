@@ -5,7 +5,7 @@ import DownloadOutlined from '@ant-design/icons/DownloadOutlined'
 import moment from 'moment'
 import { getAntdLocaleZhCN, defineMomentLocaleZhCn } from '@nbfe/tools'
 import App from './App'
-import './index.css'
+import './index.less'
 
 document.title = '黑壳'
 

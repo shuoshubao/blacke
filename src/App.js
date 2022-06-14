@@ -1,189 +1,146 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { Card, Space, Form, InputNumber, Input, DatePicker, Typography } from 'antd'
-import { div } from '@nbfe/tools'
+import { Card, Space, Descriptions, Form, InputNumber, Select, Input, DatePicker, Typography } from 'antd'
+import { add, mul, div } from '@nbfe/tools'
 import moment from 'moment'
 
+const { Text } = Typography
+
+const YearEndBonusMonthEnum = [12, 13, 14, 15, 15.5, 16].map(v => {
+  return {
+    value: v,
+    label: v
+  }
+})
+
+const DamagesModeEnum = [
+  {
+    label: '2N',
+    value: '2n'
+  },
+  {
+    label: 'N+1',
+    value: 'n1'
+  },
+  {
+    label: 'N',
+    value: 'n'
+  }
+]
+
+const columns = [
+  { label: '年假折现', name: 'money_holidays' },
+  { label: '年终奖', name: 'money_bonus' },
+  { label: '赔偿金', name: 'money_damages' },
+  { label: '合计', name: 'money_total' }
+]
+
+const defaultData = {
+  start_day: moment('2020-01-01'),
+  end_day: moment(),
+  month_salary: 50000,
+  year_end_bonus_month: 16,
+  achievement: 1,
+  unused_days: 1,
+  damages_mode: '2n'
+}
+
+const getSubmitData = formData => {
+  const { start_day, end_day, month_salary, year_end_bonus_month, achievement, unused_days, damages_mode } = formData
+
+  // 今年的在职天数
+  const days_this_year = end_day.diff(moment(1, 'MM'), 'days')
+
+  // 年终奖
+  const year_end_bonus = (year_end_bonus_month - 12) * achievement * month_salary
+
+  // 年度月薪
+  const average_month_salary = (12 * month_salary + year_end_bonus) / 12
+
+  // 北京社平3倍
+  const max_month_salary = 37840
+
+  // N
+  const money_n = Math.floor(Math.min(37840, average_month_salary))
+
+  // 日薪
+  const day_salary = div(month_salary, 21.75)
+
+  // 补偿金
+  const money_damages_map = {
+    '2n': mul(money_n, 2),
+    n1: add(money_n, month_salary),
+    n: money_n
+  }
+
+  const money_holidays = mul(unused_days, day_salary)
+  const money_bonus = year_end_bonus * (days_this_year / 365)
+  const money_damages = money_damages_map[damages_mode]
+
+  return {
+    money_holidays,
+    money_bonus,
+    money_damages,
+    money_total: add(money_holidays, money_bonus, money_damages)
+  }
+}
+
 export default () => {
-  const formRefHolidays = useRef()
-  const formRefBonus = useRef()
-  const formRefN = useRef()
+  const formRef = useRef()
 
-  const [totalHolidaysMoney, setTotalHolidaysMoney] = useState(0)
-  const [bonusMoney, setBonusMoney] = useState(0)
+  const [formData, setFormData] = useState({ ...defaultData })
 
-  const handleChangeMonthSalary = () => {
-    const formNode = formRefHolidays.current
-    const { month_salary, days } = formNode.getFieldsValue()
-    const day_salary = Math.floor(div(month_salary, 21.75))
-    formNode.setFieldsValue({
-      day_salary
-    })
-    setTotalHolidaysMoney(day_salary * days || 0)
-    handleUpdateMoney()
+  const onValuesChange = (changedValues, allValues) => {
+    setFormData(allValues)
   }
-
-  const handleChangeLastday = () => {
-    const formNode = formRefBonus.current
-    const { lastday } = formNode.getFieldsValue()
-    const days = moment(lastday).diff(moment('2022-01-01'), 'days')
-    formNode.setFieldsValue({
-      days,
-      ratio: div(days, 365)
-    })
-    handleChangeStartDay()
-    handleUpdateMoney()
-  }
-
-  const handleChangeStartDay = () => {
-    const formNode1 = formRefHolidays.current
-    const { month_salary } = formNode1.getFieldsValue()
-
-    const formNode2 = formRefBonus.current
-    const { lastday, ratio } = formNode2.getFieldsValue()
-
-    const formNode3 = formRefN.current
-    const { startDay } = formNode3.getFieldsValue()
-
-    const days = lastday.diff(startDay, 'days')
-
-    formNode3.setFieldsValue({
-      days
-    })
-  }
-
-  const handleUpdateMoney = () => {
-    const formNode1 = formRefHolidays.current
-    const { month_salary } = formNode1.getFieldsValue()
-    const formNode2 = formRefBonus.current
-    const { achievement, ratio } = formNode2.getFieldsValue()
-    const formNode3 = formRefN.current
-
-    // 过去一年月平均薪资
-    const average_month_salary = ((12 + 4 * achievement) / 12) * month_salary
-
-    const money_n = Math.floor(Math.min(37840, average_month_salary))
-
-    const money_n_1 = money_n + month_salary
-
-    const money_2n = money_n * 2
-
-    formNode3.setFieldsValue({
-      money_n,
-      money_n_1,
-      money_2n
-    })
-
-    setBonusMoney(Math.floor(4 * month_salary * achievement * ratio) || 0)
-  }
-
-  useEffect(() => {
-    handleChangeMonthSalary()
-    handleChangeLastday()
-  }, [])
 
   return (
     <div style={{ padding: 10 }}>
-      <Card
-        title={
-          <Space>
-            <span>年假金额: </span>
-            <Typography.Text type="danger" copyable={{ text: totalHolidaysMoney }}>
-              {totalHolidaysMoney}元
-            </Typography.Text>
-          </Space>
-        }
-      >
+      <Card title="基本信息" size="small">
         <Form
-          ref={formRefHolidays}
+          ref={formRef}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 20 }}
-          initialValues={{ month_salary: 38000, days: 1 }}
+          initialValues={defaultData}
+          onValuesChange={onValuesChange}
           autoComplete="off"
         >
+          <Form.Item label="入职日期" name="start_day">
+            <DatePicker style={{ width: '100%' }} allowClear={false} />
+          </Form.Item>
+          <Form.Item label="end_day" name="end_day">
+            <DatePicker style={{ width: '100%' }} allowClear={false} />
+          </Form.Item>
           <Form.Item label="月薪" name="month_salary">
-            <InputNumber step={1000} prefix="元" style={{ width: '100%' }} onChange={handleChangeMonthSalary} />
+            <InputNumber step={1000} prefix="元" style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item label="日薪" name="day_salary">
-            <InputNumber step={1000} prefix="元" style={{ width: '100%' }} disabled />
+          <Form.Item label="年终奖模式" name="year_end_bonus_month">
+            <Select style={{ width: '100%' }} options={YearEndBonusMonthEnum} />
           </Form.Item>
-          <Form.Item label="未休年假" name="days">
-            <InputNumber step={0.5} prefix="天" style={{ width: '100%' }} onChange={handleChangeMonthSalary} />
-          </Form.Item>
-        </Form>
-      </Card>
-
-      <Card
-        title={
-          <Space>
-            <span>年终奖金额: </span>
-            <Typography.Text type="danger" copyable={{ text: totalHolidaysMoney }}>
-              {bonusMoney}元
-            </Typography.Text>
-          </Space>
-        }
-      >
-        <Form
-          ref={formRefBonus}
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 20 }}
-          initialValues={{ achievement: 1, lastday: moment('2022-06-08') }}
-          autoComplete="off"
-        >
-          <Form.Item label="绩效系数" name="achievement">
+          <Form.Item label="绩效" name="achievement">
             <InputNumber step={0.1} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item label="lastday" name="lastday">
-            <DatePicker
-              disabledDate={currentDate => {
-                return currentDate < moment('2022-06-01')
-              }}
-              style={{ width: '100%' }}
-              onChange={handleChangeLastday}
-              allowClear={false}
-            />
+          <Form.Item label="未休年假" name="unused_days">
+            <InputNumber step={0.5} prefix="天" style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item label="今年天数" name="days">
-            <Input disabled style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item label="时间系数" name="ratio">
-            <Input disabled style={{ width: '100%' }} />
+          <Form.Item label="赔偿金模式" name="damages_mode">
+            <Select style={{ width: '100%' }} options={DamagesModeEnum} />
           </Form.Item>
         </Form>
       </Card>
 
-      <Card title="N的计算方式">
-        <Form
-          ref={formRefN}
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 20 }}
-          initialValues={{
-            startDay: moment('2020-07-23')
-          }}
-          autoComplete="off"
-        >
-          <Form.Item label="入职日期" name="startDay">
-            <DatePicker
-              disabledDate={currentDate => {
-                return currentDate > moment('2022-01-01')
-              }}
-              style={{ width: '100%' }}
-              onChange={handleChangeStartDay}
-              allowClear={false}
-            />
-          </Form.Item>
-          <Form.Item label="在职天数" name="days">
-            <InputNumber prefix="天" style={{ width: '100%' }} disabled />
-          </Form.Item>
-          <Form.Item label="N" name="money_n">
-            <InputNumber prefix="元" style={{ width: '100%' }} disabled />
-          </Form.Item>
-          <Form.Item label="N+1" name="money_n_1">
-            <InputNumber prefix="元" style={{ width: '100%' }} disabled />
-          </Form.Item>
-          <Form.Item label="2N" name="money_2n">
-            <InputNumber prefix="元" style={{ width: '100%' }} disabled />
-          </Form.Item>
-        </Form>
+      <Card title="赔偿金" size="small">
+        <Descriptions column={1} labelStyle={{ width: 100, textAlign: 'right' }}>
+          {columns.map(v => {
+            const { name, label } = v
+            const value = getSubmitData(formData)[name]
+            const money = Math.floor(value)
+            return (
+              <Descriptions.Item label={label} key={name}>
+                <Text copyable={{ text: money }}>{money} 元</Text>
+              </Descriptions.Item>
+            )
+          })}
+        </Descriptions>
       </Card>
     </div>
   )
