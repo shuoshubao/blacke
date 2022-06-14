@@ -1,5 +1,5 @@
 {
-  "date": "2022-06-14 20:09:33",
+  "date": "2022-06-14 22:36:00",
   "seed": {},
   "files": [
     {
@@ -8,7 +8,7 @@
       "isInitial": true,
       "isModuleAsset": false,
       "name": "index.css",
-      "path": "./dist/css/index.647f3a06eceea15adc37.css"
+      "path": "./dist/css/index.1055f74394ce85233b17.css"
     },
     {
       "isAsset": false,
@@ -16,7 +16,7 @@
       "isInitial": true,
       "isModuleAsset": false,
       "name": "index.js",
-      "path": "./dist/js/index.404fb94552739dbab0d2.js"
+      "path": "./dist/js/index.95c152f5d5e150762417.js"
     },
     {
       "isAsset": false,
@@ -24,14 +24,14 @@
       "isInitial": true,
       "isModuleAsset": false,
       "name": "js/338.js",
-      "path": "./dist/js/338.fcb4a0e93f7225d54ccb.js"
+      "path": "./dist/js/338.afaa043f7c6e5d510d04.js"
     }
   ],
   "entries": {
     "index": [
-      "js/338.fcb4a0e93f7225d54ccb.js",
-      "css/index.647f3a06eceea15adc37.css",
-      "js/index.404fb94552739dbab0d2.js"
+      "js/338.afaa043f7c6e5d510d04.js",
+      "css/index.1055f74394ce85233b17.css",
+      "js/index.95c152f5d5e150762417.js"
     ]
   },
   "dllManifest": {},
@@ -39,7 +39,7 @@
     "index": {
       "css": [
         "https://file.ljcdn.com/bs/antd/4.18.7/dist/antd.dark.min.css",
-        "./dist/css/index.647f3a06eceea15adc37.css"
+        "./dist/css/index.1055f74394ce85233b17.css"
       ],
       "js": [
         "https://file.ljcdn.com/bs/lodash/4.17.21/lodash.min.js",
@@ -47,14 +47,14 @@
         "https://file.ljcdn.com/bs/react-dom/17.0.2/umd/react-dom.production.min.js",
         "https://file.ljcdn.com/bs/moment/2.25.3/min/moment.min.js",
         "https://file.ljcdn.com/bs/antd/4.18.7/dist/antd.min.js",
-        "./dist/js/index.404fb94552739dbab0d2.js",
-        "./dist/js/338.fcb4a0e93f7225d54ccb.js"
+        "./dist/js/index.95c152f5d5e150762417.js",
+        "./dist/js/338.afaa043f7c6e5d510d04.js"
       ]
     }
   },
   "css": [
     "https://file.ljcdn.com/bs/antd/4.18.7/dist/antd.dark.min.css",
-    "./dist/css/index.647f3a06eceea15adc37.css"
+    "./dist/css/index.1055f74394ce85233b17.css"
   ],
   "js": [
     "https://file.ljcdn.com/bs/lodash/4.17.21/lodash.min.js",
@@ -62,7 +62,7 @@
     "https://file.ljcdn.com/bs/react-dom/17.0.2/umd/react-dom.production.min.js",
     "https://file.ljcdn.com/bs/moment/2.25.3/min/moment.min.js",
     "https://file.ljcdn.com/bs/antd/4.18.7/dist/antd.min.js",
-    "./dist/js/index.404fb94552739dbab0d2.js",
-    "./dist/js/338.fcb4a0e93f7225d54ccb.js"
+    "./dist/js/index.95c152f5d5e150762417.js",
+    "./dist/js/338.afaa043f7c6e5d510d04.js"
   ]
 }
