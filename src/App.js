@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Card, Space, Descriptions, Form, InputNumber, Select, Input, DatePicker, Typography } from 'antd'
 import { formatTime, add, mul, div } from '@nbfe/tools'
 import moment from 'moment'
@@ -6,7 +6,7 @@ import { omit } from 'lodash'
 
 const { Text } = Typography
 
-const YearEndBonusMonthEnum = [12, 13, 14, 15, 15.5, 16].map(v => {
+const YearEndBonusMonthEnum = [16, 15.5, 15, 14, 13, 12].map(v => {
   return {
     value: v,
     label: v
@@ -35,10 +35,22 @@ const columns = [
   { label: '合计', name: 'money_total' }
 ]
 
+const MAX_MONTH_SALARY = [
+  {
+    label: 41628,
+    value: 41628
+  },
+  {
+    label: 37840,
+    value: 37840
+  }
+]
+
 let defaultData = {
   start_day: '2020-01-01',
   end_day: formatTime(Date.now()),
   month_salary: 50000,
+  max_month_salary: 41628,
   year_end_bonus_month: 16,
   achievement: 1,
   unused_days: 1,
@@ -66,7 +78,16 @@ const getCacheData = data => {
 }
 
 const getSubmitData = formData => {
-  const { start_day, end_day, month_salary, year_end_bonus_month, achievement, unused_days, damages_mode } = formData
+  const {
+    start_day,
+    end_day,
+    month_salary,
+    max_month_salary,
+    year_end_bonus_month,
+    achievement,
+    unused_days,
+    damages_mode
+  } = formData
 
   // 所有在职天数
   const days_all = end_day.diff(start_day, 'days')
@@ -83,11 +104,8 @@ const getSubmitData = formData => {
   // 年度月薪
   const average_month_salary = (12 * month_salary + year_end_bonus) / 12
 
-  // 北京社平3倍
-  const max_month_salary = 37840
-
   // N
-  const money_n = Math.floor(Math.min(37840, average_month_salary)) * n
+  const money_n = Math.floor(Math.min(max_month_salary, average_month_salary)) * n
 
   // 日薪
   const day_salary = div(month_salary, 21.75)
@@ -112,8 +130,6 @@ const getSubmitData = formData => {
 }
 
 export default () => {
-  const formRef = useRef()
-
   const [formData, setFormData] = useState(getFormData({ ...defaultData }))
 
   const onValuesChange = (changedValues, allValues) => {
@@ -125,7 +141,6 @@ export default () => {
     <div style={{ padding: 10 }}>
       <Card title="基本信息" size="small">
         <Form
-          ref={formRef}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 20 }}
           initialValues={omit(defaultData, ['start_day', 'end_day'])}
@@ -140,6 +155,9 @@ export default () => {
           </Form.Item>
           <Form.Item label="月薪" name="month_salary">
             <InputNumber step={1000} prefix="元" style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item label="社平3倍上限" name="max_month_salary">
+            <Select style={{ width: '100%' }} options={MAX_MONTH_SALARY} />
           </Form.Item>
           <Form.Item label="年终奖模式" name="year_end_bonus_month">
             <Select style={{ width: '100%' }} options={YearEndBonusMonthEnum} />
